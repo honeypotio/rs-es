@@ -90,8 +90,6 @@ impl Serialize for TermVector  {
 pub struct Setting {
     #[serde(rename="type")]
     pub setting_type: Option<SettingTypes>,
-    pub index_options: Option<IndexOptions>,
-    pub term_vector: Option<TermVector>,
     pub force_source: bool,
     pub fragment_size: u32,
     pub number_of_fragments: u32,
@@ -103,8 +101,6 @@ impl Setting {
     pub fn new() -> Setting {
         Setting {
             setting_type: None,
-            index_options: None,
-            term_vector: None,
             force_source: false,
             fragment_size: 150,
             number_of_fragments: 5,
@@ -115,16 +111,6 @@ impl Setting {
 
     pub fn with_type(&mut self, setting_type: SettingTypes) -> &mut Setting {
         self.setting_type = Some(setting_type);
-        self
-    }
-
-    pub fn with_index_options(&mut self, index_options: IndexOptions) -> &mut Setting {
-        self.index_options = Some(index_options);
-        self
-    }
-
-    pub fn with_term_vector(&mut self, term_vector: TermVector) -> &mut Setting {
-        self.term_vector = Some(term_vector);
         self
     }
 
