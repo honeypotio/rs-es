@@ -675,6 +675,7 @@ impl <'a, 'b> SearchQueryOperation<'a, 'b> {
     add_option!(with_routing, "routing");
     add_option!(with_search_type, "search_type");
     add_option!(with_query_cache, "query_cache");
+    add_option!(with_explain, "explain");
 
     fn es_url(&'b self) -> String {
         format!("/{}/_search{}",
@@ -768,7 +769,7 @@ impl Client {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct SearchHitsHitsResult<T> {
     #[serde(rename="_index")]
     pub index: String,
@@ -782,6 +783,8 @@ pub struct SearchHitsHitsResult<T> {
     pub version: Option<u64>,
     #[serde(rename="_source")]
     pub source: Option<Box<T>>,
+    #[serde(rename="_explanation")]
+    pub explanation: Option<Value>,
     #[serde(rename="_timestamp")]
     pub timestamp: Option<f64>,
     #[serde(rename="_routing")]
@@ -805,7 +808,7 @@ impl<T> SearchHitsHitsResult<T>
 }
 
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct SearchHitsResult<T> {
     pub total: u64,
     pub hits:  Vec<SearchHitsHitsResult<T>>
@@ -837,7 +840,7 @@ impl<T> SearchHitsResult<T>
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct SearchResultInterim<T> {
     pub took:      u64,
     pub timed_out: bool,
@@ -870,7 +873,7 @@ impl<T> SearchResultInterim<T>
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct SearchResult<T> {
     pub took:      u64,
     pub timed_out: bool,

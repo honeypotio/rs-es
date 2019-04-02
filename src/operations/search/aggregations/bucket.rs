@@ -735,7 +735,7 @@ impl<'a> Serialize for BucketAggregation<'a> {
 }
 
 // results
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub enum BucketAggregationResult {
     Global(GlobalResult),
     Filter(FilterResult),
@@ -912,7 +912,7 @@ macro_rules! from_bucket_vector {
 }
 
 /// Global result
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct GlobalResult {
     pub doc_count: u64,
     pub aggs: Option<AggregationsResult>
@@ -930,7 +930,7 @@ impl GlobalResult {
 }
 
 /// Filter result
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct FilterResult {
     pub doc_count: u64,
     pub aggs: Option<AggregationsResult>
@@ -947,7 +947,7 @@ impl FilterResult {
     add_aggs_ref!();
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct FiltersBucketResult {
     pub doc_count: u64,
     pub aggs: Option<AggregationsResult>
@@ -964,7 +964,7 @@ impl FiltersBucketResult {
     add_aggs_ref!();
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct FiltersResult {
     pub buckets: HashMap<String, FiltersBucketResult>
 }
@@ -986,7 +986,7 @@ impl FiltersResult {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct MissingResult {
     pub doc_count: u64,
     pub aggs: Option<AggregationsResult>
@@ -1003,7 +1003,7 @@ impl MissingResult {
     add_aggs_ref!();
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct NestedResult {
     pub aggs: Option<AggregationsResult>
 }
@@ -1018,7 +1018,7 @@ impl NestedResult {
     add_aggs_ref!();
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct ReverseNestedResult {
     pub aggs: Option<AggregationsResult>
 }
@@ -1033,7 +1033,7 @@ impl ReverseNestedResult {
     add_aggs_ref!();
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct ChildrenResult {
     pub doc_count: u64,
     pub aggs: Option<AggregationsResult>
@@ -1051,7 +1051,7 @@ impl ChildrenResult {
 }
 
 /// Terms result
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct TermsResult {
     pub doc_count_error_upper_bound: u64,
     pub sum_other_doc_count: u64,
@@ -1071,7 +1071,7 @@ impl TermsResult {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct TermsBucketResult {
     pub key: JsonVal,
     pub doc_count: u64,
@@ -1097,7 +1097,7 @@ impl TermsBucketResult {
 
 // Range result objects
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct RangeBucketResult {
     pub from:      Option<JsonVal>,
     pub to:        Option<JsonVal>,
@@ -1118,7 +1118,7 @@ impl RangeBucketResult {
     add_aggs_ref!();
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct RangeResult {
     pub buckets: HashMap<String, RangeBucketResult>,
 }
@@ -1140,7 +1140,7 @@ impl RangeResult {
 
 // Date range result objects
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct DateRangeBucketResult {
     pub from:           Option<f64>,
     pub from_as_string: Option<String>,
@@ -1165,7 +1165,7 @@ impl DateRangeBucketResult {
     add_aggs_ref!();
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct DateRangeResult {
     pub buckets: Vec<DateRangeBucketResult>
 }
@@ -1180,7 +1180,7 @@ impl DateRangeResult {
 }
 
 /// Used for histogram results
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct HistogramBucketResult {
     pub key: String,
     pub doc_count: u64,
@@ -1199,7 +1199,7 @@ impl HistogramBucketResult {
     add_aggs_ref!();
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct HistogramResult {
     pub buckets: Vec<HistogramBucketResult>
 }
@@ -1215,7 +1215,7 @@ impl HistogramResult {
 }
 
 // Date histogram results
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct DateHistogramBucketResult {
     pub key_as_string: String,
     pub key: u64,
@@ -1236,7 +1236,7 @@ impl DateHistogramBucketResult {
     add_aggs_ref!();
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct DateHistogramResult {
     pub buckets: Vec<DateHistogramBucketResult>
 }
@@ -1252,7 +1252,7 @@ impl DateHistogramResult {
 }
 
 // GeoDistance results
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct GeoDistanceBucketResult {
     pub key: String,
     pub from: Option<f64>,
@@ -1275,7 +1275,7 @@ impl GeoDistanceBucketResult {
     add_aggs_ref!();
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct GeoDistanceResult {
     pub buckets: Vec<GeoDistanceBucketResult>
 }
@@ -1290,7 +1290,7 @@ impl GeoDistanceResult {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct GeohashGridBucketResult {
     pub key:       String,
     pub doc_count: u64,
@@ -1309,7 +1309,7 @@ impl GeohashGridBucketResult {
     add_aggs_ref!();
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct GeohashGridResult {
     pub buckets: Vec<GeohashGridBucketResult>
 }

@@ -66,7 +66,7 @@ fn format_indexes_and_types<'a>(indexes: &[&'a str], types: &[&str]) -> Cow<'a, 
 
 /// Shared struct for operations that include counts of success/failed shards.
 /// This is returned within various other result structs.
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ShardCountResult {
     pub total:      u64,
     pub successful: u64,
