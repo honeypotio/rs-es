@@ -38,7 +38,9 @@ pub struct Settings {
 #[derive(Serialize)]
 pub struct Analysis {
     pub filter:   Map<String, Value>,
-    pub analyzer: Map<String, Value>
+    pub analyzer: Map<String, Value>,
+    pub tokenizer: Map<String, Value>,
+    pub char_filter: Map<String, Value>,
 }
 
 /// An indexing operation
@@ -224,7 +226,15 @@ pub mod tests {
                         "tokenizer": "standard",
                         "filter": [ "lowercase", "autocomplete_filter"]
                     }
-                }).as_object().expect("by construction 'autocomplete' should be a map").clone()
+                }).as_object().expect("by construction 'autocomplete' should be a map").clone(),
+                char_filter: json! ({
+                    "char_filter": {
+                        "type": "pattern_replace",
+                        "pattern": ",",
+                        "replacement": " "
+                    }
+                }).as_object().expect("by construction 'char_filter' should be a map").clone(),
+                tokenizer: json! ({}).as_object().expect("by construction 'empty tokenizer' should be a map").clone()
             }
         };
 
