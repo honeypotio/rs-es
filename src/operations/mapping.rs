@@ -29,7 +29,7 @@ use reqwest::StatusCode;
 
 use serde_json::{Value, Map};
 
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
 use crate::{error::EsError, operations::GenericResult, Client, EsResponse};
 
@@ -42,7 +42,7 @@ pub struct Settings {
     pub analysis: Analysis,
 }
 
-#[derive(Debug, Serialize, Default)]
+#[derive(Debug, Serialize, Default, Deserialize)]
 pub struct Analysis {
     pub filter: Map<String, Value>,
     pub analyzer: Map<String, Value>,
