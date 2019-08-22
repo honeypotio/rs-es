@@ -205,6 +205,12 @@ impl Client {
 #[derive(Debug)]
 pub struct MappingResult;
 
+
+#[cfg(feature = "es5")]
+pub static ES_STRING_TYPE: &'static str = "text";
+#[cfg(not(feature = "es5"))]
+pub static ES_STRING_TYPE: &'static str = "string";
+
 #[cfg(test)]
 pub mod tests {
     use super::*;
@@ -223,27 +229,44 @@ pub mod tests {
         // failures anyway
         let _ = client.delete_index(index_name);
 
-        let mappings = serde_json::json! ({
-            "post": {
-                "properties": {
-                    "created_at": {
-                        "type": "date",
-                        "format": "date_time"
-                    },
-                    "title": {
-                        "type": "string",
-                        "index": "not_analyzed"
+        let mappings = if cfg!(not(feature = "es5")) {
+            serde_json::json! ({
+                "post": {
+                    "properties": {
+                        "created_at": {
+                            "type": "date",
+                            "format": "date_time"
+                        },
+                        "title": {
+                            "type": ES_STRING_TYPE,
+                            "index": "not_analyzed"
+                        }
+                    }
+                },
+                "author": {
+                    "properties": {
+                        "name": {
+                            "type": ES_STRING_TYPE
+                        }
                     }
                 }
-            },
-            "author": {
-                "properties": {
-                    "name": {
-                        "type": "string"
+            })
+        } else {
+            // ES6 does not allow multiple types per index
+            serde_json::json! ({
+                "post": {
+                    "properties": {
+                        "created_at": {
+                            "type": "date",
+                            "format": "date_time"
+                        },
+                        "title": {
+                            "type": "keyword"
+                        }
                     }
                 }
-            }
-        });
+            })
+        };
 
         let settings = Settings {
             number_of_shards: 1,
@@ -305,7 +328,11 @@ pub mod tests {
             assert!(result_wrapped.is_ok());
 
             let result = result_wrapped.unwrap();
-            assert!(result.created);
+
+            #[cfg(not(feature = "es5"))]
+            assert_eq!(result.created, true);
+            #[cfg(feature = "es5")]
+            assert_eq!(result.result, "created");
         }
     }
 }

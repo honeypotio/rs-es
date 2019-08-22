@@ -142,13 +142,17 @@ pub struct IndexResult {
     pub id: String,
     #[serde(rename = "_version")]
     pub version: u64,
+    #[cfg(not(feature = "es5"))]
     pub created: bool,
+    #[cfg(feature = "es5")]
+    pub result: String,
 }
 
 #[cfg(test)]
 pub mod tests {
     use crate::tests::{clean_db, make_client, TestDocument};
 
+    #[cfg(not(feature = "es5"))]
     use crate::units::Duration;
 
     use super::OpType;
@@ -159,14 +163,21 @@ pub mod tests {
         let mut client = make_client();
         clean_db(&mut client, index_name);
         {
-            let result_wrapped = client
-                .index(index_name, "test_type")
-                .with_doc(&TestDocument::new().with_int_field(1))
-                .with_ttl(&Duration::milliseconds(927_500))
-                .send();
+            let mut req = client.index(index_name, "test_type");
+
+            #[cfg(not(feature = "es5"))]
+            let req = req.with_ttl(&Duration::milliseconds(927_500));
+
+            let result_wrapped =
+                req.with_doc(&TestDocument::new().with_int_field(1))
+                    .send();
+
             println!("TEST RESULT: {:?}", result_wrapped);
             let result = result_wrapped.unwrap();
+            #[cfg(not(feature = "es5"))]
             assert_eq!(result.created, true);
+            #[cfg(feature = "es5")]
+            assert_eq!(result.result, "created");
             assert_eq!(result.index, index_name);
             assert_eq!(result.doc_type, "test_type");
             assert!(!result.id.is_empty());
@@ -181,7 +192,10 @@ pub mod tests {
                 .send();
             let result = result_wrapped.unwrap();
 
+            #[cfg(not(feature = "es5"))]
             assert_eq!(result.created, true);
+            #[cfg(feature = "es5")]
+            assert_eq!(result.result, "created");
             assert_eq!(result.index, index_name);
             assert_eq!(result.doc_type, "test_type");
             assert_eq!(result.id, "TEST_INDEXING_2");

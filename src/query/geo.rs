@@ -372,7 +372,8 @@ impl Serialize for Precision {
 #[cfg(test)]
 #[cfg(feature = "geo")]
 pub mod tests {
-    use crate::operations::mapping::{Analysis, MappingOperation, Settings};
+    use crate::operations::mapping::{Analysis, MappingOperation, Settings, ES_STRING_TYPE};
+
     use crate::operations::search::SearchResult;
     use crate::query::Query;
     use crate::tests::{clean_db, make_client};
@@ -412,7 +413,7 @@ pub mod tests {
         let mut doc = HashMap::new();
         let mut geo_field = HashMap::new();
         let mut str_field = HashMap::new();
-        str_field.insert("type", "string");
+        str_field.insert("type", ES_STRING_TYPE);
         geo_field.insert("type", "geo_shape");
         doc.insert("str_field", str_field);
         doc.insert("geojson_field", geo_field);
