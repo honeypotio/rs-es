@@ -99,7 +99,10 @@ impl Client {
 /// Result of a DELETE operation
 #[derive(Debug, Deserialize)]
 pub struct DeleteResult {
+    #[cfg(not(feature = "es5"))]
     pub found: bool,
+    #[cfg(feature = "es5")]
+    pub result: String,
     #[serde(rename = "_index")]
     pub index: String,
     #[serde(rename = "_type")]
@@ -132,6 +135,11 @@ pub mod tests {
 
         let delete_result = client.delete(index_name, "test_type", &id).send().unwrap();
         assert_eq!(id, delete_result.id);
+
+        #[cfg(not(feature = "es5"))]
         assert_eq!(true, delete_result.found);
+
+        #[cfg(feature = "es5")]
+        assert_eq!("deleted", delete_result.result);
     }
 }

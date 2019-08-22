@@ -718,16 +718,23 @@ impl<'a, 'b> SearchQueryOperation<'a, 'b> {
     add_option!(with_expand_wildcards, "expand_wildcards");
     add_option!(with_explain, "explain");
 
+    fn es_url(&'b self) -> String {
+        format!("/{}/_search{}",
+            format_indexes_and_types(&self.indexes, &self.doc_types),
+            self.options)
+    }
+
+    pub fn es_query(&'b self) -> Result<String, EsError> {
+        let url = self.es_url();
+        let json_string = ::serde_json::to_string(&self.body)?;
+
+        Ok(format!("POST {}\n{}", url, json_string))
+    }
+
     /// Performs the search with the specified query and options
     pub fn send<T>(&'b mut self) -> Result<SearchResult<T>, EsError>
-    where
-        T: DeserializeOwned,
-    {
-        let url = format!(
-            "/{}/_search{}",
-            format_indexes_and_types(&self.indexes, &self.doc_types),
-            self.options
-        );
+    where T: DeserializeOwned {
+        let url = self.es_url();
         let response = self.client.post_body_op(&url, &self.body)?;
         match response.status_code() {
             StatusCode::OK => {
@@ -1246,6 +1253,42 @@ mod tests {
             .unwrap();
         assert_eq!(2, within_range.hits.total);
         // TODO - add assertion for document content
+    }
+
+    #[test]
+    fn test_search_es_query() {
+        let index_name = "test_search_es_query";
+        let mut client = make_client();
+        clean_db(&mut client, index_name);
+        setup_test_data(&mut client, index_name);
+
+        let es_query = client
+            .search_query()
+            .with_indexes(&[index_name])
+            .with_query(&Query::build_match_all().build())
+            .es_query();
+
+        assert_eq!(
+r#"POST /test_search_es_query/_search
+{"query":{"match_all":{}}}"#,
+            es_query.unwrap()
+        );
+
+
+        let es_query = client
+            .search_query()
+            .with_indexes(&[index_name])
+            .with_query(&Query::build_range("int_field")
+                                    .with_gte(2)
+                                    .with_lte(3)
+                                    .build())
+            .es_query();
+
+        assert_eq!(
+r#"POST /test_search_es_query/_search
+{"query":{"range":{"int_field":{"gte":2,"lte":3}}}}"#,
+            es_query.unwrap()
+        );
     }
 
     #[test]

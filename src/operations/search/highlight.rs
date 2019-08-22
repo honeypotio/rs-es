@@ -114,6 +114,8 @@ pub struct Setting {
     pub no_match_size: u32,
     #[serde(skip_serializing_if = "ShouldSkip::should_skip")]
     pub matched_fields: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "ShouldSkip::should_skip")]
+    pub require_field_match: Option<bool>,
 }
 
 impl Default for Setting {
@@ -131,6 +133,8 @@ impl Default for Setting {
 
             #[cfg(not(feature = "es5"))]
             term_vector: None,
+
+            require_field_match: None,
         }
     }
 }
@@ -179,6 +183,11 @@ impl Setting {
 
     pub fn with_matched_fields(&mut self, matched_fields: Vec<String>) -> &mut Setting {
         self.matched_fields = Some(matched_fields);
+        self
+    }
+
+    pub fn with_require_field_match(&mut self, value: bool) -> &mut Self {
+        self.require_field_match = Some(value);
         self
     }
 }
